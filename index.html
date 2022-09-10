@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOZN64Dialogue</title>
+    <link href="assets/css/style.css" rel="stylesheet" type="text/css">
+    <script src="assets/js/default.js" defer></script>
+</head>
+<body onload="onLoad();">
+    <div id="wrapper">
+        <div id="frame">
+            <div id="dialogueBox">
+                <div id="dialogueText"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function onLoad() {
+        document.addEventListener("keydown", keyDown);
+        document.addEventListener("keyup", keyUp);
+        loadEvents().then(() => start());
+    }
+</script>
+</html>

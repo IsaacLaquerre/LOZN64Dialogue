@@ -1,0 +1,62 @@
+:root {
+}
+
+@font-face {
+    font-family: "FOT-Chiaro";
+    src: url("../font/FOT-Chiaro.otf");
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: "FOT-Chiaro";
+    color: white;
+}
+
+#dialogueBox {
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 750px;
+    height: 175px;
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0 25px;
+    border-radius: 10px;
+}
+
+#dialogueText {
+    font-size: 21pt;
+    width: 80%;
+    height: 60%;
+    margin: 0;
+}
+
+.dialogueSquare {
+    background-color: #003A96;
+    box-shadow: 0.5px 0.5px 0.5px 0.5px #002156;
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    bottom: -12.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: Glow 2s infinite;
+}
+
+@keyframes Glow {
+    0% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.5);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
