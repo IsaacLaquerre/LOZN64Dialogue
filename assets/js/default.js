@@ -68,10 +68,13 @@ function loadScripts() {
     return new Promise((resolve) => {
         getDir(scriptsDir).then(scriptsList => {
             for (i in scriptsList) {
-                readTextFile(scriptsList[i]).then(script => {
-                    scripts.push(new Script(scriptsList[i], script));
-                });
+                if (scriptsList[i].split(".")[scriptsList[i].split(".").length - 1].toLowerCase() === "script") {
+                    readTextFile(scriptsList[i]).then(script => {
+                        scripts.push(new Script(scriptsList[i], script));
+                    });
+                }
             }
+            console.log(scripts);
             resolve();
         });
     });
