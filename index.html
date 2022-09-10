@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOZN64Dialogue</title>
     <link href="assets/css/style.css" rel="stylesheet" type="text/css">
+    <script src="assets/js/Script.js" defer></script>
+    <script src="assets/js/events.js" defer></script>
+    <script src="assets/js/SoundFile.js" defer></script>
     <script src="assets/js/default.js" defer></script>
 </head>
+
 <body onload="onLoad();">
     <div id="wrapper">
         <div id="frame">
-            <div id="dialogueBox">
+            <div id="dialogueBox" style="opacity: 1;">
                 <div id="dialogueText"></div>
             </div>
         </div>
@@ -21,7 +26,12 @@
     function onLoad() {
         document.addEventListener("keydown", keyDown);
         document.addEventListener("keyup", keyUp);
-        loadEvents().then(() => start());
+        loadAssets().then(() => {
+            loadScripts().then(() => {
+                loadEvents().then(() => start());
+            });
+        });
     }
 </script>
+
 </html>

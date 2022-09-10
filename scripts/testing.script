@@ -1,0 +1,33 @@
+MUSIC InsideAHouse 0.15
+
+BACKGROUND Mayor'sResidence
+
+SPEAK Hi! My name is Isaac.
+
+SPEAK ${#39FF14}Here${white} is an example of ${red}coloring text${white}.
+
+SFX Hey
+
+SPEAK testing, commas, :), oh also..... elipses... yes. i like
+
+SPEAK now multiple lines?&{NEWLINE}yes? of course!&{NEWLINE}lorem ipsum dolor&{NEWLINE}sit amet&{NEWLINE}secret part hehe
+
+SPEAK %{1000}slow%{default} normal (default speed) %{0}FAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAST
+
+SPEAK hopefully the speed reset????????%{100}??????????
+
+SPEAK now ${red}testing&{NEWLINE} multiple ${white}formatting %{500}${#39FF14}together %{default}&{NEWLINE}${white}:)
+
+SPEAK now....%{10}.... ${default}changing speeeee%{0}eeeeeeeed with pause characters. %{default}yeah,,,,${500},,,, %{default}:)
+
+SPEAK goodbye dialogue box
+
+HIDE_DIALOGUE
+
+WAIT 5000
+
+SHOW_DIALOGUE
+
+WAIT 2000
+
+SPEAK oh there you are
