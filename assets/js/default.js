@@ -1,10 +1,14 @@
+var started = false;
+
 var scriptsDir = ["./scripts"];
 var backgroundsDir = ["./assets/images/backgrounds"];
+var spritesDir = ["./assets/images/sprites"];
 var sfxDir = ["./assets/audio/sfx"];
 var musicDir = ["./assets/audio/music"];
 
 var scripts = [];
 var backgrounds = {};
+var sprites = {};
 var sfx = {};
 var music = {};
 
@@ -17,6 +21,9 @@ var speaking = false;
 var speakingSpeed = 60;
 var speakingSpeedTemp = 60;
 var maxChars = 172;
+
+var currentMusic = undefined;
+var currentBackground = undefined;
 
 var waitingForAction = false;
 
@@ -32,12 +39,24 @@ var binds = {
                 doNext();
             }
         }
+    },
+    "Enter": {
+        name: "confirm",
+        pressed: false,
+        exec: () => {
+            if (!started) {
+                start();
+                started = true;
+            }
+        }
     }
 };
 
 function start() {
     console.log(eventStack[eventIndex]);
     requestAnimationFrame(ts => update(ts));
+    document.querySelector("#startMenu").remove();
+    document.querySelector("#frame").style.backgroundImage = "none";
 }
 
 function loadAssets() {
@@ -59,6 +78,12 @@ function loadAssets() {
                 backgrounds[backgroundsList[i].split("/").pop().slice(0, -4)] = backgroundsList[i];
             }
             console.log(backgrounds);
+        });
+        getDir(spritesDir).then(spritesList => {
+            for (i in spritesList) {
+                sprites[spritesList[i].split("/").pop().slice(0, -4)] = spritesList[i];
+            }
+            console.log(sprites);
         });
         resolve();
     });
@@ -88,16 +113,19 @@ async function loadEvents() {
                 var args = scripts[i].lines[index].split(" ").slice(1);
                 switch (type) {
                     case "BACKGROUND":
-                        eventStack.push(new BackgroudEvent(backgrounds[args[0]]));
+                        eventStack.push({ type: "BACKGROUND", event: new BackgroudEvent(backgrounds[args[0]]) });
                         break;
                     case "MUSIC":
-                        eventStack.push(new AudioEvent("MUSIC", music[args[0]], args[1], args[2]));
+                        eventStack.push({ type: "MUSIC", event: new AudioEvent("MUSIC", music[args[0]], args[1], args[2]) });
                         break;
                     case "SFX":
-                        eventStack.push(new AudioEvent("SFX", sfx[args[0]]));
+                        eventStack.push({ type: "SFX", event: new AudioEvent("SFX", sfx[args[0]]) });
+                        break;
+                    case "SYNC":
+                        eventStack.push({ type: "SYNC", event: new SyncEvent() });
                         break;
                     case "WAIT":
-                        eventStack.push(new WaitEvent(args[0]));
+                        eventStack.push({ type: "WAIT", event: new WaitEvent(args[0]) });
                         break;
                     case "SPEAK":
                         var text = args.join(" ");
@@ -110,19 +138,19 @@ async function loadEvents() {
                                 var lastSpace = chars.slice(latestSpace, maxChars * (loops + 1)).join("").lastIndexOf(" ") + maxChars * loops;
                                 if (remainingLength > maxChars) var newText = text.substring(latestSpace, lastSpace);
                                 else newText = text.substring(latestSpace);
-                                eventStack.push(new SpeakEvent(newText));
+                                eventStack.push({ type: "SPEAK", event: new SpeakEvent(newText) });
                                 console.log(newText.length);
                                 remainingLength -= maxChars;
                                 latestSpace = lastSpace;
                                 loops++;
                             }
-                        } else eventStack.push(new SpeakEvent(text));
+                        } else eventStack.push({ type: "SPEAK", event: new SpeakEvent(text) });
                         break;
                     case "HIDE_DIALOGUE":
-                        eventStack.push(new DialogueBoxEvent("HIDE"));
+                        eventStack.push({ type: "HIDE_DIALOGUE", event: new DialogueBoxEvent("HIDE") });
                         break;
                     case "SHOW_DIALOGUE":
-                        eventStack.push(new DialogueBoxEvent("SHOW"));
+                        eventStack.push({ type: "SHOW_DIALOGUE", event: new DialogueBoxEvent("SHOW") });
                         break;
                     default:
                         break;
@@ -138,7 +166,19 @@ function update(timestamp) {
 
     lastTs = timestamp;
 
-    if (eventStack[eventIndex].update(elapsed) && !waitingForAction) nextEvent();
+    if (eventStack[eventIndex].type === "SYNC") {
+        if (eventIndex + 1 >= (eventStack.length - 1)) return;
+        var event1 = eventStack[eventIndex + 1].event.update(elapsed);
+        var event2 = eventStack[eventIndex + 2].event.update(elapsed);
+        if (event1 && event2 && !waitingForAction) {
+            if (eventIndex + 2 >= (eventStack.length - 1)) return;
+            console.log(eventStack[eventIndex + 1]);
+            eventIndex++;
+            nextEvent();
+        }
+    } else {
+        if (eventStack[eventIndex].event.update(elapsed) && !waitingForAction) nextEvent();
+    }
 
     requestAnimationFrame(ts => update(ts));
 }
@@ -156,7 +196,15 @@ function keyDown(e) {
             binds[e.key].exec();
         } else {
             if (speaking) {
-                eventStack[eventIndex].skip();
+                try {
+                    eventStack[eventIndex].event.skip();
+                } catch (err) {
+                    try {
+                        eventStack[eventIndex + 1].event.skip();
+                    } catch (err) {
+                        eventStack[eventIndex + 2].event.skip();
+                    }
+                }
                 speakingSpeedTemp = speakingSpeed;
             }
         }

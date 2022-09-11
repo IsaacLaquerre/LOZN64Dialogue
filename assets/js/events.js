@@ -7,6 +7,7 @@ class BackgroudEvent {
     }
 
     update() {
+        currentBackground = this.background;
         document.querySelector("#frame").style.backgroundImage = "url(\"" + this.background + "\")";
         return true;
     }
@@ -22,11 +23,26 @@ class AudioEvent {
 
     update() {
         if (!this.played) {
+            if (currentMusic != undefined) {
+                currentMusic.fadeOut();
+            }
+            currentMusic = this.soundfile;
             this.soundfile.play();
             this.played = true;
         }
-        if (this.soundfile.ended) return true;
+        if (this.soundfile.ended) {
+            if (this.type === "MUSIC") currentMusic = undefined;
+            return true;
+        }
         if (this.type === "MUSIC") return true;
+    }
+}
+
+class SyncEvent {
+    constructor() {}
+
+    update() {
+        return true;
     }
 }
 
@@ -81,6 +97,8 @@ class SpeakEvent {
             if (speaking) this.doneSpeaking();
             return true;
         } else speaking = true;
+
+        if (document.querySelector("#dialogueBox").style.opacity == 0) document.querySelector("#dialogueBox").style.opacity = 1;
 
         if (this.skipped) {
             if (this.text.indexOf("${") != -1) {

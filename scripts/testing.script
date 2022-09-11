@@ -6,7 +6,17 @@ SPEAK Hi! My name is Isaac.
 
 SPEAK ${#39FF14}Here${white} is an example of ${red}coloring text${white}.
 
-SFX Hey
+SYNC
+
+SPEAK Synced events (SPEAK & SFX at the same time)
+
+SFX Hey 0.75
+
+SYNC
+
+MUSIC ClockTower 0.15
+
+BACKGROUND ClockTower
 
 SPEAK testing, commas, :), oh also..... elipses... yes. i like
 
